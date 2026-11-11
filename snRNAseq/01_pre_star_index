@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --job-name=star_index
+#SBATCH --partition=iob_p
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=24:00:00
+#SBATCH --output=%x_%j.out
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=xf24205@uga.edu
+
+ml STAR/2.7.11b-GCC-13.3.0
+
+GENOMEDIR=/scratch/xf24205/reference/tair10/star_index
+mkdir -p $GENOMEDIR
+
+#Use STAR to do index
+STAR --runThreadN 4 \
+     --runMode genomeGenerate \
+     --genomeDir $GENOMEDIR \
+     --genomeFastaFiles /scratch/xf24205/reference/tair10/GCA_000001735.2_TAIR10.1_genomic.fna \
+     --sjdbGTFfile /scratch/xf24205/reference/tair10/tair10.1_genomic.gtf \
+     --sjdbOverhang 150
