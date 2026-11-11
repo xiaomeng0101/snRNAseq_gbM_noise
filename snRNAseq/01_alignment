@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --partition=iob_p
+#SBATCH --output=starsolo..%j.out
+#SBATCH --job-name=align_col0_2
+#SBATCH --ntasks=1
+#SBATCH --time=60:00:00
+#SBATCH --mem=300G
+#SBATCH --cpus-per-task=30
+#SBATCH --mail-user=xf24205@uga.edu
+#SBATCH --mail-type=FAIL,END
+
+date;hostname;pwd
+
+read1=/scratch/xf24205/epiRIL12_10x_RNAseq/fastaq/Xiaomeng_At_col0_2_leaf_S1_L001_R1_001.fastq.gz
+read2=/scratch/xf24205/epiRIL12_10x_RNAseq/fastaq/Xiaomeng_At_col0_2_leaf_S1_L001_R2_001.fastq.gz 
+
+ml STAR/2.7.11b-GCC-13.3.0
+
+STAR --runThreadN 30 --readFilesCommand zcat \
+    --genomeDir /scratch/xf24205/reference/tair10/star_index \
+    --outFileNamePrefix col0_2 --readFilesIn $read2 $read1 \
+    --sjdbGTFfile /scratch/xf24205/reference/tair10/tair10.1_genomic.gtf \
+    --soloType Droplet --soloCBwhitelist /scratch/xf24205/singlecell/3M-february-2018.txt \
+    --soloUMIlen 12 --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
+    --soloUMIfiltering MultiGeneUMI_CR \
+    --soloUMIdedup 1MM_CR \
+    --soloCellFilter EmptyDrops_CR \
+    --soloFeatures GeneFull \
+    --soloMultiMappers PropUnique \
+    --soloBarcodeReadLength 0 \
+    --twopassMode Basic \
+    --outSAMtype BAM SortedByCoordinate \
+    --limitBAMsortRAM 200000000000 \
+    --outSAMattributes NH HI nM AS CR UR CB UB GX GN sS sQ sM
